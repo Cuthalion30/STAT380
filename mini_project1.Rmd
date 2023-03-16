@@ -9,12 +9,149 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Front Matter
+## Front Matter Including Part 1
+```{r}
+#Part 1
+library(readxl)
+CODGames2_mp <- read_excel("C:/Users/Grace Wagner/Downloads/CODGames2_mp.xlsx")
+#This wont work for you will it since its a path for my computer? I did this for now so that I could work on part 2, but I know you mentioned using the data in github and I thought I knew what to do but once I looked at it further I realized I wasn't sure. 
+#I also just merged the FrontMatter and part 1 because I figured since part 1 was importing data it would be nice to keep it in the Front matter.
 
-## Part 1
-hi
+library(dplyr)
+library(ggplot2)
+```
+
 ## Part 2
+Explore 6 variables (at least 1 categorical and 1 quantitative). 
+Identify:
+- variable and type of variable #DONE
+- types of values the variable can take #DONE
+- amount of missing data within variable #DONE
+- summary statistics #DONE
+- visualization #DONE
+- write a few sentences to describe what you have learned about the variable #NEED TO FINISH
+If Categorical:
+- make a table of possible values and include counts or proportions #DONE
+- make an appropriate plot to show the distribution of values #DONE
+if Quantitative:
+- Include some basic summary stats like the mean, median, standard deviation, min, max, etc. #DONE
+- make an appropriate plot to show the distribution of values #DONE
+```{r}
+#Variable 1: Eliminations
+#type
+typeof(CODGames2_mp$Eliminations)
+#range
+range(CODGames2_mp$Eliminations)
+#missing value
+sum(is.na(CODGames2_mp$Eliminations))
+#summary stats
+CODGames2_mp %>%
+  summarize(
+    mean = mean(Eliminations),
+    median = median(Eliminations),
+    sd = sd(Eliminations),
+    min = min(Eliminations),
+    max = max(Eliminations)
+  )
+#plot
+hist(CODGames2_mp$Eliminations,
+     xlab = "Eliminations",
+     main = "Distribution of Eliminations")
+
+#Variable 2: Deaths
+typeof(CODGames2_mp$Deaths)
+range(CODGames2_mp$Deaths)
+sum(is.na(CODGames2_mp$Deaths))
+CODGames2_mp %>%
+  summarize(
+    mean = mean(Deaths),
+    median = median(Deaths),
+    sd = sd(Deaths),
+    min = min(Deaths),
+    max = max(Deaths)
+  )
+hist(CODGames2_mp$Deaths,
+     xlab = "Deaths",
+     main = "Distribution of Deaths")
+
+#Variable 3: Score
+typeof(CODGames2_mp$Score)
+range(CODGames2_mp$Score)
+sum(is.na(CODGames2_mp$Score))
+CODGames2_mp %>%
+  summarize(
+    mean = mean(Score),
+    median = median(Score),
+    sd = sd(Score),
+    min = min(Score),
+    max = max(Score)
+  )
+hist(CODGames2_mp$Score,
+     xlab = "Score",
+     main = "Distribution of Score")
+
+#Variable 4: Damage
+typeof(CODGames2_mp$Damage)
+range(CODGames2_mp$Damage)
+sum(is.na(CODGames2_mp$Damage))
+CODGames2_mp %>%
+  summarize(
+    mean = mean(Damage),
+    median = median(Damage),
+    sd = sd(Damage),
+    min = min(Damage),
+    max = max(Damage)
+  )
+hist(CODGames2_mp$Damage,
+     xlab = "Damage",
+     main = "Distribution of Damage")
+
+#Variable 5: TotalXP
+typeof(CODGames2_mp$TotalXP)
+range(CODGames2_mp$TotalXP)
+sum(is.na(CODGames2_mp$TotalXP))
+CODGames2_mp %>%
+  summarize(
+    mean = mean(TotalXP),
+    median = median(TotalXP),
+    sd = sd(TotalXP),
+    min = min(TotalXP),
+    max = max(TotalXP)
+  )
+hist(CODGames2_mp$TotalXP,
+     xlab = "TotalXP",
+     main = "Distribution of TotalXP")
+
+#Number 6 Candidates (or remove a quantitative one and add both categorical)
+
+#Variable 6: PrimaryWeapon
+typeof(CODGames2_mp$PrimaryWeapon)
+unique(CODGames2_mp$PrimaryWeapon)
+sum(is.na(CODGames2_mp$PrimaryWeapon))
+tableWeapons <- CODGames2_mp %>%
+  group_by(PrimaryWeapon) %>%
+  summarize(N = n())
+
+ggplot(CODGames2_mp, aes(PrimaryWeapon)) +
+  geom_bar() +
+  labs(title = "Distribution of Primary Weapons", x = "Primaray Weapons")
+  
+
+#Variable 6: Choice #Has NA values
+typeof(CODGames2_mp$Choice)
+unique(CODGames2_mp$Choice)
+sum(is.na(CODGames2_mp$Choice))
+CODGames2_mp %>%
+  group_by(Choice) %>%
+  summarize(N = n())
+
+ggplot(CODGames2_mp, aes(Choice)) +
+  geom_bar() +
+  scale_x_discrete(guide = guide_axis(n.dodge = 4)) +
+  labs(title = "Distribution of Choices", xlab = "Choices")
+```
 
 ## Part 3
+question I was thinking we could ask: which primary weapon (or choice, but choice has NA values) resulted in the most deaths/elimintaions/totalXp
 
 ## Part 4
