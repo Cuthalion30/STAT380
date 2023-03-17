@@ -229,6 +229,5 @@ What was Learned about the Variable:
 We learned that Choice is a categorical variable that has one missing value. We also learned that the Choice can be any of the following maps, Miami Strike, Moscow, Yamantau, Drive-In, Collateral Strike, Raid, WMD, Standoff, Crossroads Strike, Deprogram, Nuketown '84, Jungle, Rush, Zoo, Slums, Echelon, Garrison, Cartel, Express, The Pines, Apocalypse, Diesel, Amerika, Checkmate, Hijacked. From the bar chart, and the table of values and counts, we can tell that Rush, Diesel, and Crossroads Strike are the most common Choices. We can also tell that Amerika, Echelon, Jungle, and NA are the least common Choices appearing less than 5 times. 
 
 ## Part 3
-question I was thinking we could ask: which primary weapon (or choice, but choice has NA values) resulted in the most deaths/elimintaions/totalXp
 
 ## Part 4
