@@ -14,37 +14,25 @@ knitr::opts_chunk$set(echo = TRUE)
 #Part 1
 library(readxl)
 CODGames2_mp <- read_excel("C:/Users/Grace Wagner/Downloads/CODGames2_mp.xlsx")
-#This wont work for you will it since its a path for my computer? I did this for now so that I could work on part 2, but I know you mentioned using the data in github and I thought I knew what to do but once I looked at it further I realized I wasn't sure. 
-#I also just merged the FrontMatter and part 1 because I figured since part 1 was importing data it would be nice to keep it in the Front matter.
 
 library(dplyr)
 library(ggplot2)
 ```
 
 ## Part 2
-Explore 6 variables (at least 1 categorical and 1 quantitative). 
-Identify:
-- variable and type of variable #DONE
-- types of values the variable can take #DONE
-- amount of missing data within variable #DONE
-- summary statistics #DONE
-- visualization #DONE
-- write a few sentences to describe what you have learned about the variable #NEED TO FINISH
-If Categorical:
-- make a table of possible values and include counts or proportions #DONE
-- make an appropriate plot to show the distribution of values #DONE
-if Quantitative:
-- Include some basic summary stats like the mean, median, standard deviation, min, max, etc. #DONE
-- make an appropriate plot to show the distribution of values #DONE
 ```{r}
-#Variable 1: Eliminations
-#type
+#Variable: Eliminations
+
+#Type of Variable: Quantitative
 typeof(CODGames2_mp$Eliminations)
-#range
+
+#Types of Values Variable can take on:
 range(CODGames2_mp$Eliminations)
-#missing value
+
+#Amount of Missing Data:
 sum(is.na(CODGames2_mp$Eliminations))
-#summary stats
+
+#Summary Stats:
 CODGames2_mp %>%
   summarize(
     mean = mean(Eliminations),
@@ -53,15 +41,29 @@ CODGames2_mp %>%
     min = min(Eliminations),
     max = max(Eliminations)
   )
-#plot
+
+#Visualization:
 hist(CODGames2_mp$Eliminations,
      xlab = "Eliminations",
      main = "Distribution of Eliminations")
+```
+What was Learned about the Variable:
 
-#Variable 2: Deaths
+We learned that Eliminations is a quantitative variable that can take on values from 2 to 39, and has no missing values. It has a mean of about 15.09005, median of 14, and a standard deviation of 6.133161. From the right skewed histogram, we can tell that Eliminations is not commonly above 30. We can tell there is a mode between 10-15, showing that the number of eliminations is commonly between 10-15. 
+
+```{r}
+#Variable: Deaths
+
+#Type of Variable: Quantitative
 typeof(CODGames2_mp$Deaths)
+
+#Types of Values Variable can take on:
 range(CODGames2_mp$Deaths)
+
+#Amount of Missing Data:
 sum(is.na(CODGames2_mp$Deaths))
+
+#Summary Stats
 CODGames2_mp %>%
   summarize(
     mean = mean(Deaths),
@@ -70,14 +72,29 @@ CODGames2_mp %>%
     min = min(Deaths),
     max = max(Deaths)
   )
+
+#Visualization:
 hist(CODGames2_mp$Deaths,
      xlab = "Deaths",
      main = "Distribution of Deaths")
+```
+What was Learned about the Variable:
 
+We learned that Deaths is a quantitative variable that can take on values from 4 to 42, and has no missing values. It has a mean of about 14.9763, median of 15, and a standard deviation of 5.129226. From the right skewed histogram, we can tell that Deaths is not commonly above 25. We can tell there is a mode between 10-15, showing that the number of Deaths is commonly between 10-15. 
+
+```{r}
 #Variable 3: Score
+
+#Type of Variable: Quantitative
 typeof(CODGames2_mp$Score)
+
+#Types of Values Variable can take on:
 range(CODGames2_mp$Score)
+
+#Amount of Missing Data:
 sum(is.na(CODGames2_mp$Score))
+
+#Summary Stats:
 CODGames2_mp %>%
   summarize(
     mean = mean(Score),
@@ -86,14 +103,29 @@ CODGames2_mp %>%
     min = min(Score),
     max = max(Score)
   )
+
+#Visualization:
 hist(CODGames2_mp$Score,
      xlab = "Score",
      main = "Distribution of Score")
+```
+What was Learned about the Variable:
 
-#Variable 4: Damage
+We learned that Score is a quantitative variable that can take on values from 100 to 7315, and has no missing values. It has a mean of about 2944.531, median of 2770, and a standard deviation of 1464.965. From the right skewed histogram we can tell that Score is not commonly above 6000. We can tell there is a mode between 2000-3000, showing that the Score is commonly between 2000-3000.
+
+```{r}
+#Variable: Damage
+
+#Type of Variable: Quantitative
 typeof(CODGames2_mp$Damage)
+
+#Types of Values Variable can take on:
 range(CODGames2_mp$Damage)
+
+#Amount of Missing Data:
 sum(is.na(CODGames2_mp$Damage))
+
+#Summary Stats:
 CODGames2_mp %>%
   summarize(
     mean = mean(Damage),
@@ -102,14 +134,29 @@ CODGames2_mp %>%
     min = min(Damage),
     max = max(Damage)
   )
+
+#Visualization:
 hist(CODGames2_mp$Damage,
      xlab = "Damage",
      main = "Distribution of Damage")
+```
+What was Learned about the Variable:
 
-#Variable 5: TotalXP
+We learned that Damage is a quantitative variable that can take on values from 56 to 960, and has no missing values. It has a mean of about 415.1659, median of 397, and a standard deviation of 166.3132. From the slightly right skewed histogram we can tell that Damage is not commonly above 800. We can tell there is a mode between 300-400, showing that the Damage is commonly between 300-400.
+
+```{r}
+#Variable: TotalXP
+
+#Type of Variable: Quantitative
 typeof(CODGames2_mp$TotalXP)
+
+#Types of Values Variable can take on:
 range(CODGames2_mp$TotalXP)
+
+#Amount of Missing Data:
 sum(is.na(CODGames2_mp$TotalXP))
+
+#Summary Stats:
 CODGames2_mp %>%
   summarize(
     mean = mean(TotalXP),
@@ -118,38 +165,68 @@ CODGames2_mp %>%
     min = min(TotalXP),
     max = max(TotalXP)
   )
+
+#Visualization:
 hist(CODGames2_mp$TotalXP,
      xlab = "TotalXP",
      main = "Distribution of TotalXP")
+```
+What was Learned about the Variable:
 
-#Number 6 Candidates (or remove a quantitative one and add both categorical)
+We learned that TotalXP is a quantitative variable that can take on values from 1935 to 43816, and has no missing values. It has a mean of about 11975.4, median of 10328, and a standard deviation of 6166.652. From the right skewed histogram we can tell that TotalXP is not commonly above 25000. We can tell there is a mode between 5000-10000, showing that TotalXP is commonly between 5000-10000.
 
-#Variable 6: PrimaryWeapon
+```{r}
+#Variable: PrimaryWeapon
+
+#Type of Variable: Categorical
 typeof(CODGames2_mp$PrimaryWeapon)
+
+#Types of Values Variable can take on:
 unique(CODGames2_mp$PrimaryWeapon)
+
+#Amount of Missing Data:
 sum(is.na(CODGames2_mp$PrimaryWeapon))
-tableWeapons <- CODGames2_mp %>%
+
+#Summary Stats:
+CODGames2_mp %>%
   group_by(PrimaryWeapon) %>%
   summarize(N = n())
 
+#Visualization:
 ggplot(CODGames2_mp, aes(PrimaryWeapon)) +
   geom_bar() +
   labs(title = "Distribution of Primary Weapons", x = "Primaray Weapons")
-  
+```  
+What was Learned about the Variable:
 
-#Variable 6: Choice #Has NA values
+We learned that PrimaryWeapon is a categorical variable that has no missing values. We also learned that the PrimaryWeapon can be a M16, MP5, AK-47, Krig 6, QBZ-83, Pelington 703, FFAR 1, Type 63, or a MG 82. From the bar chart, and the table of values and counts, we can tell that the M16 is the most used PrimaryWeapon and the MG 82 is the least used. The AK-47, FFAR 1 and MG 82 have all been the PrimaryWeapon less than 5 times. 
+
+```{r}
+#Variable: Choice 
+
+#Type of Variable: Quantitative
 typeof(CODGames2_mp$Choice)
+
+#Types of Values Variable can take on:
 unique(CODGames2_mp$Choice)
+
+#Amount of Missing Data:
 sum(is.na(CODGames2_mp$Choice))
+
+#Summary Stats:
 CODGames2_mp %>%
   group_by(Choice) %>%
   summarize(N = n())
 
+#Visualization:
 ggplot(CODGames2_mp, aes(Choice)) +
   geom_bar() +
   scale_x_discrete(guide = guide_axis(n.dodge = 4)) +
   labs(title = "Distribution of Choices", xlab = "Choices")
 ```
+What was Learned about the Variable:
+
+We learned that Choice is a categorical variable that has one missing value. We also learned that the Choice can be any of the following maps, Miami Strike, Moscow, Yamantau, Drive-In, Collateral Strike, Raid, WMD, Standoff, Crossroads Strike, Deprogram, Nuketown '84, Jungle, Rush, Zoo, Slums, Echelon, Garrison, Cartel, Express, The Pines, Apocalypse, Diesel, Amerika, Checkmate, Hijacked. From the bar chart, and the table of values and counts, we can tell that Rush, Diesel, and Crossroads Strike are the most common Choices. We can also tell that Amerika, Echelon, Jungle, and NA are the least common Choices appearing less than 5 times. 
 
 ## Part 3
 question I was thinking we could ask: which primary weapon (or choice, but choice has NA values) resulted in the most deaths/elimintaions/totalXp
