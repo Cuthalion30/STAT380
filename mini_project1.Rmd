@@ -11,31 +11,36 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Front Matter Including Part 1
 ```{r}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
 #Part 1
 library(readxl)
 CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
-#This wont work for you will it since its a path for my computer? I did this for now so that I could work on part 2, but I know you mentioned using the data in github and I thought I knew what to do but once I looked at it further I realized I wasn't sure. 
-#I also just merged the FrontMatter and part 1 because I figured since part 1 was importing data it would be nice to keep it in the Front matter.
-
-library(dplyr)
-library(ggplot2)
 ```
 
 ## Part 2
-Explore 6 variables (at least 1 categorical and 1 quantitative). 
+
+Explore 6 variables (at least 1 categorical and 1 quantitative). <br>
+
 Identify:
 - variable and type of variable #DONE
 - types of values the variable can take #DONE
 - amount of missing data within variable #DONE
 - summary statistics #DONE
 - visualization #DONE
-- write a few sentences to describe what you have learned about the variable #NEED TO FINISH
+- write a few sentences to describe what you have learned about the variable #NEED TO FINISH <br>
+
 If Categorical:
 - make a table of possible values and include counts or proportions #DONE
-- make an appropriate plot to show the distribution of values #DONE
+- make an appropriate plot to show the distribution of values #DONE <br>
+
 if Quantitative:
 - Include some basic summary stats like the mean, median, standard deviation, min, max, etc. #DONE
 - make an appropriate plot to show the distribution of values #DONE
+
+
 ```{r}
 #Variable 1: Eliminations
 #type
