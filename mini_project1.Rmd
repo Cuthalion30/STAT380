@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 #Part 1
 library(readxl)
-CODGames2_mp <- read_excel("C:/Users/Grace Wagner/Downloads/CODGames2_mp.xlsx")
+CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 #This wont work for you will it since its a path for my computer? I did this for now so that I could work on part 2, but I know you mentioned using the data in github and I thought I knew what to do but once I looked at it further I realized I wasn't sure. 
 #I also just merged the FrontMatter and part 1 because I figured since part 1 was importing data it would be nice to keep it in the Front matter.
 
