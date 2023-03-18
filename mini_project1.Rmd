@@ -11,12 +11,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Front Matter Including Part 1
 ```{r}
-#Part 1
-library(readxl)
-CODGames2_mp <- read_excel("C:/Users/Grace Wagner/Downloads/CODGames2_mp.xlsx")
-
 library(dplyr)
 library(ggplot2)
+
+# Part 1
+library(readxl)
+CODGames2_mp <- read_excel("C:/Users/Grace Wagner/Downloads/CODGames2_mp.xlsx")
 ```
 
 ## Part 2
