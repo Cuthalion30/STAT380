@@ -167,6 +167,7 @@ All of our questions are regarding what the variables mean. Here they are: <br><
   <li>What does the ratio mean in the variable MapVote?</li>
   <li>What are the different GameTypes?</li>
   <li>What does the Results table represent and does the meaning change among game types?</li>
+  <li>What game mode is HC - TDM? Specifically, what does TDM stand for?</li>
 </ul>
 
 ## Task 4
@@ -193,8 +194,6 @@ ggplot(data = xp, mapping = aes( x = fct_inorder(month), y = TotalXP)) +
        x = "Month",
        y = "TotalXP Earned")
 
-
-
 ```
 <br> *Assessment:* <br><br>
 
@@ -209,4 +208,82 @@ The one final note is that the user might not have played as much from month to 
 question I was thinking we could ask: which primary weapon (or choice, but choice has NA values) resulted in the most deaths/elimintaions/totalXp
 
 
-What is the relationship between deaths and eliminations over time?
+I am interested in answering the question: what is the relationship between deaths and eliminations?
+
+```{r}
+elims <- CODGames2_mp %>%
+  select("Date", "Deaths", "Eliminations", "GameType") %>% 
+    mutate(year = year(CODGames2_mp$Date), 
+         month = month.name[month(CODGames2_mp$Date)],
+         day = day(CODGames2_mp$Date)
+         )
+  
+ggplot(data = elims, mapping = aes(x = Eliminations, y = Deaths, color = GameType)) +
+  geom_point() + 
+  labs(title = "Elimations Compared to Deaths by Game Mode",
+       y = "Times User Died",
+       x = "Times User Eliminated an Opponent"
+       )
+```
+After observing this visualization, a couple things become apparent. One is that the game mode has a major influence on the number of deaths and eliminations that the user can get in a game. It would appear that TDM is the game mode that is most preferred by our user, but it is also the game which seems to have the lowest number of deaths and elimations. The Hardpoint mode is what appears to accumulate the most deaths and eliminations. <br><br>
+
+Because my main question asks about the relationship between deaths and eliminations by game, and that three out of the four game modes have few representations, I will remove the three game modes that aren't TDM and then check out the relationship between our two desired variables.
+
+```{r}
+# Table filtering to only have the necessary values
+elims_TDM <- CODGames2_mp %>%
+  select("Date", "Deaths", "Eliminations", "GameType", "PrimaryWeapon") %>% 
+    mutate(year = year(CODGames2_mp$Date), 
+         month = month.name[month(CODGames2_mp$Date)],
+         day = day(CODGames2_mp$Date)
+         ) %>% 
+  filter(GameType == "HC - TDM")
+
+## Visualization
+ggplot(data = elims_TDM, mapping = aes(x = Eliminations, y = Deaths)) +
+  geom_point() + geom_smooth(method = lm)
+  labs(title = "Elimations Compared to Deaths by Game Mode",
+       y = "Times User Died",
+       x = "Times User Eliminated an Opponent"
+       )
+```
+<br>
+So, as it turns out, there is actually no relationship between the number of deaths and eliminations in the game mode TDM - the most commonly played game mode by our user. This is very surprising because, typically, games such as the one which we have data for will have a little bit of time you have to wait in which to respawn. The hypothesis at the beginning was that more deaths means more time waiting to respawn which means less time to accrue eliminations. However, the data shows that this does not appear to be the case! <br>
+
+There is, of course, another explanation. That is, our assumptions about how the game works is incorrect. There might not be any time between being killed and being allowed to respawn into the game. This, then, would be a good question to ask and is why it ended up being included in the section regarding our questions about the data features. <br>
+
+### Extra: Part 3
+
+There is one final thing which we would like to explore. We are curious to see if any relationships appear if we add in an additional layer of complexity to the above analysis. Namely, does the choice of primary weapon influence the number of deaths and eliminations in a TDM game. Because there are eight different choices of primary weapon, we only looked into the top three most used. Those would be: M-16, MP-5, and the Pelington 703. This is explored below.
+
+```{r}
+elims_TDM_topguns <- CODGames2_mp %>%
+  select("Date", "Deaths", "Eliminations", "GameType", "PrimaryWeapon") %>% 
+    mutate(year = year(CODGames2_mp$Date), 
+         month = month.name[month(CODGames2_mp$Date)],
+         day = day(CODGames2_mp$Date)
+         ) %>% 
+  filter(GameType == "HC - TDM",
+         PrimaryWeapon == "M16"| PrimaryWeapon == "MP5"|PrimaryWeapon == "Pelington 703")
+
+## Visualization
+ggplot(data = elims_TDM_topguns, mapping = aes(x = Eliminations, y = Deaths,)) +
+  geom_point() +
+  geom_smooth(method = lm,
+              color = "blue") +
+  labs(title = "Elimations Compared to Deaths by Gun",
+       subtitle = "TDM Game Mode",
+       y = "Times User Died",
+       x = "Times User Eliminated an Opponent"
+       ) +
+  facet_grid(. ~ PrimaryWeapon) +
+  theme_bw()
+```
+<br>
+After this, while it doesn't seem that there is any relationship when the user is using the M16, there is an apparent negative relationship between Deaths and Eliminations when the user is using the MP5 and a positive relationship when the user is using the Pelington 703. <br>
+
+Presently, we have no hypothesis as to why this might be. It is, however, an interesting thing and is fundamently why we explored it. :)
+
+## Discussion of Group Participation
+
+In this project, Grace and I did an even split of the work. She did questions 1 and 2 and I did questions 3 and 4. To do this effectively, we met at several points in the process to discuss not only this distribution of work, but also what visualizations to make for part 2 and what questions to ask for part 3. We also discussed what would be the most interesting question to explore for part four. We both found this distribution of work to be effective and would do something similar in the future. <br>
