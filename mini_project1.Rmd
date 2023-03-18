@@ -9,29 +9,20 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-<<<<<<< HEAD
-## Front Matter
-hi
-## Part 1
-=======
-## Front Matter Including Part 1
-```{r}
+## Front Matter Including Task 1
+```{r warnings = FALSE, message = FALSE}
+# Load necessary libraries
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+
 #Part 1
 library(readxl)
 CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
-#This wont work for you will it since its a path for my computer? I did this for now so that I could work on part 2, but I know you mentioned using the data in github and I thought I knew what to do but once I looked at it further I realized I wasn't sure. 
-#I also just merged the FrontMatter and part 1 because I figured since part 1 was importing data it would be nice to keep it in the Front matter.
-
-library(dplyr)
-library(ggplot2)
-
-# Part 1
-library(readxl)
-CODGames2_mp <- read_excel("C:/Users/Grace Wagner/Downloads/CODGames2_mp.xlsx")
 ```
->>>>>>> Grace
 
-## Part 2
+## Task 2
+
 ```{r}
 #Variable: Eliminations
 
@@ -59,9 +50,10 @@ hist(CODGames2_mp$Eliminations,
      xlab = "Eliminations",
      main = "Distribution of Eliminations")
 ```
-What was Learned about the Variable:
 
-We learned that Eliminations is a quantitative variable that can take on values from 2 to 39, and has no missing values. It has a mean of about 15.09005, median of 14, and a standard deviation of 6.133161. From the right skewed histogram, we can tell that Eliminations is not commonly above 30. We can tell there is a mode between 10-15, showing that the number of eliminations is commonly between 10-15. 
+<br>What was Learned about the Variable: <br>
+
+We learned that Eliminations is a quantitative variable that can take on values from 2 to 39, and has no missing values. It has a mean of about 15.09005, median of 14, and a standard deviation of 6.133161. From the right skewed histogram, we can tell that Eliminations is not commonly above 30. We can tell there is a mode between 10-15, showing that the number of eliminations is commonly between 10-15. <br>
 
 ```{r}
 #Variable: Deaths
@@ -90,9 +82,9 @@ hist(CODGames2_mp$Deaths,
      xlab = "Deaths",
      main = "Distribution of Deaths")
 ```
-What was Learned about the Variable:
+<br>What was Learned about the Variable:<br>
 
-We learned that Deaths is a quantitative variable that can take on values from 4 to 42, and has no missing values. It has a mean of about 14.9763, median of 15, and a standard deviation of 5.129226. From the right skewed histogram, we can tell that Deaths is not commonly above 25. We can tell there is a mode between 10-15, showing that the number of Deaths is commonly between 10-15. 
+We learned that Deaths is a quantitative variable that can take on values from 4 to 42, and has no missing values. It has a mean of about 14.9763, median of 15, and a standard deviation of 5.129226. From the right skewed histogram, we can tell that Deaths is not commonly above 25. We can tell there is a mode between 10-15, showing that the number of Deaths is commonly between 10-15. <br>
 
 ```{r}
 #Variable 3: Score
@@ -121,7 +113,7 @@ hist(CODGames2_mp$Score,
      xlab = "Score",
      main = "Distribution of Score")
 ```
-What was Learned about the Variable:
+<br>What was Learned about the Variable:<br>
 
 We learned that Score is a quantitative variable that can take on values from 100 to 7315, and has no missing values. It has a mean of about 2944.531, median of 2770, and a standard deviation of 1464.965. From the right skewed histogram we can tell that Score is not commonly above 6000. We can tell there is a mode between 2000-3000, showing that the Score is commonly between 2000-3000.
 
@@ -152,7 +144,7 @@ hist(CODGames2_mp$Damage,
      xlab = "Damage",
      main = "Distribution of Damage")
 ```
-What was Learned about the Variable:
+<br>What was Learned about the Variable:<br>
 
 We learned that Damage is a quantitative variable that can take on values from 56 to 960, and has no missing values. It has a mean of about 415.1659, median of 397, and a standard deviation of 166.3132. From the slightly right skewed histogram we can tell that Damage is not commonly above 800. We can tell there is a mode between 300-400, showing that the Damage is commonly between 300-400.
 
@@ -183,7 +175,7 @@ hist(CODGames2_mp$TotalXP,
      xlab = "TotalXP",
      main = "Distribution of TotalXP")
 ```
-What was Learned about the Variable:
+<br>What was Learned about the Variable:<br>
 
 We learned that TotalXP is a quantitative variable that can take on values from 1935 to 43816, and has no missing values. It has a mean of about 11975.4, median of 10328, and a standard deviation of 6166.652. From the right skewed histogram we can tell that TotalXP is not commonly above 25000. We can tell there is a mode between 5000-10000, showing that TotalXP is commonly between 5000-10000.
 
@@ -209,7 +201,7 @@ ggplot(CODGames2_mp, aes(PrimaryWeapon)) +
   geom_bar() +
   labs(title = "Distribution of Primary Weapons", x = "Primaray Weapons")
 ```  
-What was Learned about the Variable:
+<br>What was Learned about the Variable:<br>
 
 We learned that PrimaryWeapon is a categorical variable that has no missing values. We also learned that the PrimaryWeapon can be a M16, MP5, AK-47, Krig 6, QBZ-83, Pelington 703, FFAR 1, Type 63, or a MG 82. From the bar chart, and the table of values and counts, we can tell that the M16 is the most used PrimaryWeapon and the MG 82 is the least used. The AK-47, FFAR 1 and MG 82 have all been the PrimaryWeapon less than 5 times. 
 
@@ -236,10 +228,137 @@ ggplot(CODGames2_mp, aes(Choice)) +
   scale_x_discrete(guide = guide_axis(n.dodge = 4)) +
   labs(title = "Distribution of Choices", xlab = "Choices")
 ```
-What was Learned about the Variable:
+<br>What was Learned about the Variable:<br>
 
 We learned that Choice is a categorical variable that has one missing value. We also learned that the Choice can be any of the following maps, Miami Strike, Moscow, Yamantau, Drive-In, Collateral Strike, Raid, WMD, Standoff, Crossroads Strike, Deprogram, Nuketown '84, Jungle, Rush, Zoo, Slums, Echelon, Garrison, Cartel, Express, The Pines, Apocalypse, Diesel, Amerika, Checkmate, Hijacked. From the bar chart, and the table of values and counts, we can tell that Rush, Diesel, and Crossroads Strike are the most common Choices. We can also tell that Amerika, Echelon, Jungle, and NA are the least common Choices appearing less than 5 times. 
 
-## Part 3
+## Task 3
 
-## Part 4
+All of our questions are regarding what the variables mean. Here they are: <br><br>
+<ul>
+  <li>What aspects of the game play into the variable Score? How can one score high? How does it differ from                  TotalXP?</li>
+  <li>What would cause the variable "Choice" - which is the choice of map in which the game is played - to have an NA         value?</li>
+  <li>What is the relationship between Map1, Map2, Choice, and MapVote?</li>
+  <li>What does the ratio mean in the variable MapVote?</li>
+  <li>What are the different GameTypes?</li>
+  <li>What does the Results table represent and does the meaning change among game types?</li>
+  <li>What game mode is HC - TDM? Specifically, what does TDM stand for?</li>
+</ul>
+
+## Task 4
+
+### Part 1
+
+Is the player’s performance, as quantified by the amount of experience points gained (TotalXP variable) changing over time?
+
+```{r}
+# Create a new table with TotalXP, Date, and then year, month, day derived from Date
+# the lubridate package is loaded in with tidyverse
+
+xp <- CODGames2_mp %>% 
+  select("Date", "TotalXP") %>% 
+  mutate(year = year(CODGames2_mp$Date), 
+         month = month.name[month(CODGames2_mp$Date)],
+         day = day(CODGames2_mp$Date)
+         )
+
+# Use fct_inorder to order boxplots by month
+ggplot(data = xp, mapping = aes( x = fct_inorder(month), y = TotalXP)) +
+  geom_boxplot() +
+  labs(title = "TotalXP Earning by Month", 
+       x = "Month",
+       y = "TotalXP Earned")
+
+```
+<br> *Assessment:* <br><br>
+
+It does not appear that there is any improvement whatsoever across the three months in which the user played the game. In fact, the median value of XP earned in a day during a given month is less in both July and August as compared to June. Arguably, the user's performance worsened.<br><br>
+
+However, there are numerous variables at play here. Game play could have affected the TotalXP value. Additionally, the user might decide that, once his performance with a particular weapon reaches a certain level, he wants to use a different weapon. So, while he apparently is not earning more XP over time, that does not necessarily mean that he is becoming worse at the game.<br><br>
+
+The one final note is that the user might not have played as much from month to month. Such variability in game play would also affect our assessment.<br><br>
+
+### Part 2
+
+question I was thinking we could ask: which primary weapon (or choice, but choice has NA values) resulted in the most deaths/elimintaions/totalXp
+
+
+I am interested in answering the question: what is the relationship between deaths and eliminations?
+
+```{r}
+elims <- CODGames2_mp %>%
+  select("Date", "Deaths", "Eliminations", "GameType") %>% 
+    mutate(year = year(CODGames2_mp$Date), 
+         month = month.name[month(CODGames2_mp$Date)],
+         day = day(CODGames2_mp$Date)
+         )
+  
+ggplot(data = elims, mapping = aes(x = Eliminations, y = Deaths, color = GameType)) +
+  geom_point() + 
+  labs(title = "Elimations Compared to Deaths by Game Mode",
+       y = "Times User Died",
+       x = "Times User Eliminated an Opponent"
+       )
+```
+After observing this visualization, a couple things become apparent. One is that the game mode has a major influence on the number of deaths and eliminations that the user can get in a game. It would appear that TDM is the game mode that is most preferred by our user, but it is also the game which seems to have the lowest number of deaths and elimations. The Hardpoint mode is what appears to accumulate the most deaths and eliminations. <br><br>
+
+Because my main question asks about the relationship between deaths and eliminations by game, and that three out of the four game modes have few representations, I will remove the three game modes that aren't TDM and then check out the relationship between our two desired variables.
+
+```{r}
+# Table filtering to only have the necessary values
+elims_TDM <- CODGames2_mp %>%
+  select("Date", "Deaths", "Eliminations", "GameType", "PrimaryWeapon") %>% 
+    mutate(year = year(CODGames2_mp$Date), 
+         month = month.name[month(CODGames2_mp$Date)],
+         day = day(CODGames2_mp$Date)
+         ) %>% 
+  filter(GameType == "HC - TDM")
+
+## Visualization
+ggplot(data = elims_TDM, mapping = aes(x = Eliminations, y = Deaths)) +
+  geom_point() + geom_smooth(method = lm)
+  labs(title = "Elimations Compared to Deaths by Game Mode",
+       y = "Times User Died",
+       x = "Times User Eliminated an Opponent"
+       )
+```
+<br>
+So, as it turns out, there is actually no relationship between the number of deaths and eliminations in the game mode TDM - the most commonly played game mode by our user. This is very surprising because, typically, games such as the one which we have data for will have a little bit of time you have to wait in which to respawn. The hypothesis at the beginning was that more deaths means more time waiting to respawn which means less time to accrue eliminations. However, the data shows that this does not appear to be the case! <br>
+
+There is, of course, another explanation. That is, our assumptions about how the game works is incorrect. There might not be any time between being killed and being allowed to respawn into the game. This, then, would be a good question to ask and is why it ended up being included in the section regarding our questions about the data features. <br>
+
+### Extra: Part 3
+
+There is one final thing which we would like to explore. We are curious to see if any relationships appear if we add in an additional layer of complexity to the above analysis. Namely, does the choice of primary weapon influence the number of deaths and eliminations in a TDM game. Because there are eight different choices of primary weapon, we only looked into the top three most used. Those would be: M-16, MP-5, and the Pelington 703. This is explored below.
+
+```{r}
+elims_TDM_topguns <- CODGames2_mp %>%
+  select("Date", "Deaths", "Eliminations", "GameType", "PrimaryWeapon") %>% 
+    mutate(year = year(CODGames2_mp$Date), 
+         month = month.name[month(CODGames2_mp$Date)],
+         day = day(CODGames2_mp$Date)
+         ) %>% 
+  filter(GameType == "HC - TDM",
+         PrimaryWeapon == "M16"| PrimaryWeapon == "MP5"|PrimaryWeapon == "Pelington 703")
+
+## Visualization
+ggplot(data = elims_TDM_topguns, mapping = aes(x = Eliminations, y = Deaths,)) +
+  geom_point() +
+  geom_smooth(method = lm,
+              color = "blue") +
+  labs(title = "Elimations Compared to Deaths by Gun",
+       subtitle = "TDM Game Mode",
+       y = "Times User Died",
+       x = "Times User Eliminated an Opponent"
+       ) +
+  facet_grid(. ~ PrimaryWeapon) +
+  theme_bw()
+```
+<br>
+After this, while it doesn't seem that there is any relationship when the user is using the M16, there is an apparent negative relationship between Deaths and Eliminations when the user is using the MP5 and a positive relationship when the user is using the Pelington 703. <br>
+
+Presently, we have no hypothesis as to why this might be. It is, however, an interesting thing and is fundamently why we explored it. :)
+
+## Discussion of Group Participation
+
+In this project, Grace and I did an even split of the work. She did questions 1 and 2 and I did questions 3 and 4. To do this effectively, we met at several points in the process to discuss not only this distribution of work, but also what visualizations to make for part 2 and what questions to ask for part 3. We also discussed what would be the most interesting question to explore for part four. We both found this distribution of work to be effective and would do something similar in the future. <br>
