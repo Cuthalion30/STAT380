@@ -1,5 +1,5 @@
 ---
-title: "Mini-Project"
+title: "Mini-Project 1"
 author: "Grace Wagner and Nathanael Kovscek"
 date: "`r Sys.Date()`"
 output: html_document
@@ -300,6 +300,7 @@ ggplot(data = elims, mapping = aes(x = Eliminations, y = Deaths, color = GameTyp
        x = "Times User Eliminated an Opponent"
        )
 ```
+
 After observing this visualization, a couple things become apparent. One is that the game mode has a major influence on the number of deaths and eliminations that the user can get in a game. It would appear that TDM is the game mode that is most preferred by our user, but it is also the game which seems to have the lowest number of deaths and elimations. The Hardpoint mode is what appears to accumulate the most deaths and eliminations. <br><br>
 
 Because my main question asks about the relationship between deaths and eliminations by game, and that three out of the four game modes have few representations, I will remove the three game modes that aren't TDM and then check out the relationship between our two desired variables.
