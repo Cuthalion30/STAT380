@@ -1,0 +1,30 @@
+---
+title: "Mini-Project 2"
+author: "Grace Wagner and Nathanael Kovscek"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Front Matter
+```{r warnings = FALSE, message = FALSE}
+# Load necessary libraries
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+
+#Part 1
+library(readxl)
+CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
+```
+
+## Task 1
+
+## Task 2
+
+## Task 3
+
+## Task 4
