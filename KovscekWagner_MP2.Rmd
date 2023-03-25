@@ -21,7 +21,43 @@ library(readxl)
 CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 ```
 
-## Task 1
+## Task 1 
+
+#### NA.Omit() Is a Bad Idea
+
+Normally, in data cleaning, we want to remove pesky null values in our data frame. A function that does this effectively is the NA.Omit() function from the stats package in R. This function will remove rows (i.e., cases) in the data table that poses null values. And, if observed, our data table has plenty of null values. See the code below: <br>
+
+```{r message=FALSE}
+#This function will count the number of NA's in a vector named dat
+countNA <- function(dat){
+  numNA <- sum(is.na(dat))
+  return(numNA)
+}
+
+case_nas <- apply(X = CODGames2_mp, MARGIN = 2, FUN = countNA)
+
+case_nas <- data.frame(NA_Count = case_nas)
+case_nas$cases <- rownames(case_nas)
+# rownames(case_nas) <- 1:nrow(case_nas)
+
+ggplot(case_nas, aes(x = NA_Count)) + 
+  geom_histogram(binwidth = 20) +
+  labs(title = "Count of NAs",
+       y = "Number of Features",
+       x = "Number of NAs in a Feature")
+
+```
+<br>
+From this graph, we can see that there are several features that have around 200 NA values. For reference, there are `r length(CODGames2_mp)` cases in our dataframe. That means that, if we were to use the na.omit, we would have a dataframe with, at most, a dozen or so cases. Most likely with zero cases. Therefore, we would have nothing to analyze which defeats the purpose of the project!
+
+As a demonstration, here is what would happen if we were to use na.omit.
+
+```{r}
+df <- na.omit(CODGames2_mp)
+print(nrow(df))
+```
+<br>
+Sure enough, there are zero cases after applying the function NA.Omit() to our dataframe.
 
 ## Task 2
 
