@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Front Matter
 ```{r warnings = FALSE, message = FALSE}
+remove(list = ls())
 # Load necessary libraries
 library(tidyverse)
 library(ggplot2)
@@ -60,6 +61,277 @@ print(nrow(df))
 Sure enough, there are zero cases after applying the function NA.Omit() to our dataframe.
 
 ## Task 2
+
+### GameType Exploration
+
+An exploration of the variable GameType.
+
+```{r}
+#Type of Variable
+typeof(CODGames2_mp$GameType)
+#Types of Values Variable can take on:
+unique(CODGames2_mp$GameType)
+#Amount of Missing Data:
+sum(is.na(CODGames2_mp$GameType))
+
+```
+<br>
+The value that it takes is a character and the four variables are obviously of a categorical style. GameType, I presume is a specific mode where the objectives are different per game mode. From personal experience, the goal of Hardpoint is to defend a position for a minute or two while Kill Confirm's goal is to kill someone and pick up a token which they have dropped. If someone else picks up the token before you, this is called a denial. <br>
+
+The good news about this feature is that there is no missing data!
+
+```{r}
+#Summary Stats
+CODGames2_mp %>%
+  group_by(GameType) %>%
+  summarize(N = n())
+
+#Visualization:
+ggplot(CODGames2_mp, aes(GameType)) +
+  geom_bar() +
+  labs(title = "Distribution of GameType", 
+       x = "Game Type", 
+       y = "Times Game Mode was Played")
+```
+<br>
+From the above graph and the table, an obvious game mode favorite emerges - TDM. The user plays this 197 times while the other game modes are only played around 8 times each. From this, we can guess that the NAs which we explored above have something to do with the GameType. <br>
+
+We theorize that, if we groupby the game type, we can observe additional variables that are specific only to that particular game type. Thus, for the remainder of this exploration, we will look at the variables that are dependent on GameType.
+
+```{r}
+kill_confirm <- CODGames2_mp %>% filter(GameType == "HC - Kill Confirmed")
+domination <- CODGames2_mp %>% filter(GameType == "HC - Domination")
+hardpoint <- CODGames2_mp %>% filter(GameType == "HC - Hardpoint")
+tdm <- CODGames2_mp %>% filter(GameType == "HC - TDM")
+```
+<br>
+Now that we have tables filtered by GameType, let's see how many of these tables contain variables with only null values in their columns. This will serve to test our theory about how there are some variables dependent on the game mode.
+
+```{r}
+colnames(hardpoint[colSums(is.na(hardpoint)) == nrow(hardpoint)])
+```
+
+Hardpoint does not use the above features in its game.
+
+```{r}
+colnames(domination[colSums(is.na(domination)) == nrow(domination)])
+```
+
+Domination does not use the above features in its game.
+
+```{r}
+colnames(kill_confirm[colSums(is.na(kill_confirm)) == nrow(kill_confirm)])
+```
+
+Kill Confirm does not use the above features in its game.
+
+```{r}
+colnames(tdm[colSums(is.na(tdm)) == nrow(tdm)])
+```
+
+TDM does not use the above features in its game.<br>
+
+Now that this has been determined, I will explore the features that are completely unique to the Game Type. First, though, let me remove the unused features from each game mode.
+
+```{r}
+domination <- domination %>% select_if(colSums(is.na(.)) != nrow(.))
+hardpoint <- hardpoint %>% select_if(colSums(is.na(.)) != nrow(.))
+kill_confirm <- kill_confirm %>% select_if(colSums(is.na(.)) != nrow(.))
+tdm <- tdm %>% select_if(colSums(is.na(.)) != nrow(.))
+```
+
+### Features Unique To Game Type
+
+The question I must next ask is the following: what features are unique to the game type? The function below will determines this.
+
+```{r}
+uniqueFeatures <- function(gametype){
+  
+    not_game <- colnames(CODGames2_mp %>% 
+                           filter(GameType != gametype) %>% 
+                           select_if(colSums(is.na(.)) != nrow(.))
+    )
+    
+    game <- colnames(CODGames2_mp %>% 
+                       filter(GameType == gametype) %>% 
+                       select_if(colSums(is.na(.)) != nrow(.))
+    )
+  
+  return(setdiff(game, not_game))
+}
+```
+
+```{r}
+gameTypes = c("HC - Hardpoint", "HC - Domination", "HC - Kill Confirmed", "HC - TDM")
+
+for (game in gameTypes) {
+  print(paste("For", game, "a unique feature is", uniqueFeatures(game)))
+}
+```
+
+*Note:* Because there is nothing listed in the last section for TDM, we can take this to mean that there are no unique features for this particular game mode. I will now look at each of these represented.
+
+*Additional Note:* Because of a lack of representation of these game modes, the data is sparse. However, we can still learn a little bit about our user by looking at their performance in these game modes.
+
+### GameType Hardpoint: Feature - Time_Min
+
+```{r}
+#Type of Variable: Quantitative
+typeof(hardpoint$Time_Min)
+
+#Types of Values Variable can take on:
+range(hardpoint$Time_Min)
+
+#Amount of Missing Data:
+sum(is.na(hardpoint$Time_Min))
+
+#Summary Stats:
+hardpoint %>%
+  summarize(
+    mean = mean(Time_Min),
+    median = median(Time_Min),
+    sd = sd(Time_Min),
+    min = min(Time_Min),
+    max = max(Time_Min)
+  )
+
+#Visualization:
+ggplot(hardpoint, aes(x = Time_Min)) +
+  geom_histogram() +
+  labs(title = "Time in Minutes",
+     x = "Time_Min")
+```
+The narrow distribution indicates to me that the point to be defended changes ever two minutes. If that is the case, the visualization suggests that our user has done quite well in this game mode because her has been at that mark the most times!
+
+### GameType Hardpoint: Feature - Time_Sec
+
+```{r}
+
+#Type of Variable: Quantitative
+typeof(hardpoint$Time_Sec)
+
+#Types of Values Variable can take on:
+range(hardpoint$Time_Sec)
+
+#Amount of Missing Data:
+sum(is.na(hardpoint$Time_Sec))
+
+#Summary Stats:
+hardpoint %>%
+  summarize(
+    mean = mean(Time_Sec),
+    median = median(Time_Sec),
+    sd = sd(Time_Sec),
+    min = min(Time_Sec),
+    max = max(Time_Sec)
+  )
+
+#Visualization:
+ggplot(hardpoint, aes(x = Time_Sec)) + geom_histogram(binwidth = 10)
+     labs(title = "Time in Seconds",
+     x = "Time_Sec")
+```
+Time_sec and time_min must be very related. Based on my understanding of this game mode, time_min is the time in minutes the user defended the position while time_sec is the addition time in seconds in which the point was defended. From this graph, it would seem that the user tends to fall on the lower seconds side of the spectrum. However, this does not necessarily mean that he was at a point less. To have a better understanding, we would want to combine the features Time_Sec and Time_Min.
+
+### GameType Domination: Feature - Captures
+
+```{r}
+#Type of Variable: Quantitative
+typeof(domination$Captures)
+
+#Types of Values Variable can take on:
+range(domination$Captures)
+
+#Amount of Missing Data:
+sum(is.na(domination$Captures))
+
+#Summary Stats:
+domination %>%
+  summarize(
+    mean = mean(Captures),
+    median = median(Captures),
+    sd = sd(Captures),
+    min = min(Captures),
+    max = max(Captures)
+  )
+
+#Visualization:
+ggplot(domination, aes(x = Captures)) + geom_histogram(binwidth = .5) +
+     labs(title = "Captures",
+     x = "Distribution of Captures")
+```
+Unfortunately, we cannot learn much more from this data distribution aside from the fact that the range of captures if 3 and that, in the three times the user has played, he has averaged roughly 5 captures per game. 
+
+### GameType Kill Confirmed: Feature - Confirms
+
+```{r}
+#Type of Variable: Quantitative
+typeof(kill_confirm$Confirms)
+
+#Types of Values Variable can take on:
+range(kill_confirm$Confirms)
+
+#Amount of Missing Data:
+sum(is.na(kill_confirm$Confirms))
+
+#Summary Stats:
+kill_confirm %>%
+  summarize(
+    mean = mean(Confirms),
+    median = median(Confirms),
+    sd = sd(Confirms),
+    min = min(Confirms),
+    max = max(Confirms)
+  )
+
+#Visualization:
+ggplot(kill_confirm, aes(x = Confirms)) +
+  geom_histogram() +
+  labs(title = "Confirms Frequency Histogram",
+     x = "Distribution of Confirms")
+```
+There is not much to say here either, aside from the fact that the range of confirms is 3 and that the average number of confirms in the three times our user has played this game mode is 7.
+
+### GameType Kill Confirmed: Feature - Denies
+
+```{r}
+#Type of Variable: Quantitative
+typeof(kill_confirm$Denies)
+
+#Types of Values Variable can take on:
+range(kill_confirm$Denies)
+
+#Amount of Missing Data:
+sum(is.na(kill_confirm$Denies))
+
+#Summary Stats:
+kill_confirm %>%
+  summarize(
+    mean = mean(Denies),
+    median = median(Denies),
+    sd = sd(Denies),
+    min = min(Denies),
+    max = max(Denies)
+  )
+
+#Visualization:
+ggplot(kill_confirm, aes(x = Denies)) +
+  geom_histogram() +
+  labs(title = "Denies Frequency Histogram",
+     x = "Distribution of Denies")
+```
+
+There is not much to say here either, aside from the fact that the range of confirms is 8 and that the average number of confirms in the three times our user has played this game mode is 4.7. Some additional exploration of this game mode's variables (confirms and denies) is explored below
+
+```{r}
+ggplot(kill_confirm, aes(x = Denies, y = Confirms)) + 
+  geom_point() +
+  labs(title = "Confirms by Denies")
+```
+
+Oddly enough, it would appear that more confirms mean there are more denies!
+
+This concludes the further exploration section of this mini-project.
 
 ## Task 3
 
