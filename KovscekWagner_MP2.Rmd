@@ -26,5 +26,23 @@ CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 ## Task 2
 
 ## Task 3
+```{r}
+Results2 <- CODGames2_mp %>%
+  separate(Result, into = c("PlayersTeam", "OtherTeam"), sep = "-", convert = TRUE)
 
+PlayerTeamResult <- Results2$PlayersTeam - Results2$OtherTeam
+
+PlayerTeamWin = 0
+PlayerTeamLose = 0
+PlayerTeamTie = 0
+
+for (i in 1:length(CODGames2_mp$Result)){
+  ifelse(PlayerTeamResult[i] > 0, PlayerTeamWin <- PlayerTeamWin + 1, PlayerTeamWin)
+  ifelse(PlayerTeamResult[i] < 0, PlayerTeamLose <- PlayerTeamLose + 1, PlayerTeamLose)
+  ifelse(PlayerTeamResult[i] == 0, PlayerTeamTie <- PlayerTeamTie + 1, PlayerTeamTie)
+}
+
+ResultsTable = data.frame("Wins" = PlayerTeamWin, "Loses" = PlayerTeamLose, "Ties" = PlayerTeamTie)
+ResultsTable
+```
 ## Task 4
