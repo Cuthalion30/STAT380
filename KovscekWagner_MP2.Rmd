@@ -46,3 +46,20 @@ ResultsTable = data.frame("Wins" = PlayerTeamWin, "Loses" = PlayerTeamLose, "Tie
 ResultsTable
 ```
 ## Task 4
+Inference Question: 
+
+How does the player's performance affect the team's performance (margin which they win)?
+
+Team's Performance using ResultsData
+```{r}
+Results2 <- Results2 %>%
+  mutate(GameResult = Results2$PlayersTeam - Results2$OtherTeam) %>%
+  mutate(GameResult2 = case_when(GameResult > 0 ~ "win", GameResult < 0 ~ "lose", GameResult == 0 ~ "tie")) %>%
+  mutate(win = ifelse(GameResult2 == "win", 1, 0),
+         lose = ifelse(GameResult2 == "lose", 2, 0))
+
+reg_res <- lm(TotalXP ~ win, data = Results2)
+summary(reg_res)
+reg_res <- lm(TotalXP ~ lose, data = Results2)
+summary(reg_res)
+```
