@@ -376,3 +376,14 @@ The formula for this model would be as follows:
 
 $$\hat{y}_i = `r round(model[["coefficients"]][1], digits=3)` + `r round(model[["coefficients"]][2], digits = 3)`x_{win, i} + `r round(model[["coefficients"]][3], digits = 3)`x_{Eliminations, i} + `r round(model[["coefficients"]][4], digits = 3)`x_{Deaths, i}$$
 
+The multiple linear regression model shows a positive slope of 1148.801 for wins, 497.579 for eliminations, and 4.511 for deaths. This means that when the player's team wins, we expect the player's TotalXP to increase by 1148.801 on average all other variables unchanged. When the player's eliminations increase by one, we expect the player's TotalXP to increase by 497.579 on average all other variables unchanged. Additionally, each time the player dies, we expect the player's TotalXP to increase by 4.511 on average all other variables unchanged. 
+
+In conclusion, each of our variables when increased (all other variables equal), we can expect there to be a greater value for TotalXP.
+
+This is particularly interesting when it comes to the variable "Deaths." While there is only a slight increase, it is still strange that it is positive. We assume that this is because more deaths imply that our user is engaging hostile opponents more often. If this is the case, then the user is also likely to gain more eliminations which has a huge impact on the TotalXP.
+
+## Discussion of Group Participation
+
+In this project, Nathanael and I did an even split of the work. He did questions 1 and 2 and I did questions 3 and 4. To do this effectively, we met at several points in the process to discuss not only this distribution of work, but also what inference question to ask for question 4. We both found this distribution of work to be effective and would do something similar in the future. 
+
+
