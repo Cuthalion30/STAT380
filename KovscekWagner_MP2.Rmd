@@ -367,8 +367,8 @@ Results2 <- Results2 %>%
   )
          
 
-reg_res <- lm(TotalXP ~ win + Eliminations + Deaths, data = Results2)
-summary(reg_res)
+model <- lm(TotalXP ~ win + Eliminations + Deaths, data = Results2)
+summary(model)
 
 ```
 
