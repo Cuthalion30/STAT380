@@ -334,6 +334,7 @@ Oddly enough, it would appear that more confirms mean there are more denies!
 This concludes the further exploration section of this mini-project.
 
 ## Task 3
+
 ```{r}
 Results2 <- CODGames2_mp %>%
   separate(Result, into = c("PlayersTeam", "OtherTeam"), sep = "-", convert = TRUE)
@@ -373,4 +374,5 @@ summary(reg_res)
 
 The formula for this model would be as follows:
 
+$$\hat{y}_i = `r round(model[["coefficients"]][1], digits=3)` + `r round(model[["coefficients"]][2], digits = 3)`x_{win, i} + `r round(model[["coefficients"]][3], digits = 3)`x_{Eliminations, i} + `r round(model[["coefficients"]][4], digits = 3)`x_{Deaths, i}$$
 
