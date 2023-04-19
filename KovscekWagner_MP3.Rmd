@@ -48,12 +48,15 @@ ggplot(full_games, mapping = aes(x = XPType, y = TotalXP)) +
 
 This shown, it is much more favorable for the user to have the Double XP + 10% XPType than the 10% Boost type. The user's totalXP median earning is approximately 6000 more than it otherwise would be. Additionally, the interquartile range for Double XP + 10% is larger and there are more outliers on the high end than there is for 10% Boost type.
 
+Out of curiosity, we would like to see the distribution of the XPTypes.
+
 ```{r}
 CODGames2_mp %>% 
   group_by(XPType) %>%
   summarise(n = n())
 ```
 
+I'm not sure if this is more or less surprising given what we know about the game, but my intuition suggests that something which increases the amount of earned XP by a median average of around 6000 would be more rare in the game. Additionally, even though there are fewer uses of the DoubleXP, we would still expect the larger IQR because the XP earned is double that which was received. Looking at the boxplots again, I would suggest that the IQR for the 10% Boost is half the IQR for the DoubleXP type!
 
 
 ## Task 2
