@@ -1,0 +1,12 @@
+---
+title: "Mini Project 3"
+author: "Grace Wagner and Nathanael Kovscek"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Front Matter
