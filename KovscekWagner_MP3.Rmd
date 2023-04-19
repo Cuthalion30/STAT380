@@ -22,3 +22,39 @@ library(readxl)
 CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 ```
 
+## Task 1
+
+First, we would like to see the distribution of Full and Partial games. That way, we are able to see what the dimensions of the filtered data table should have.
+```{r}
+CODGames2_mp %>% 
+  group_by(FullPartial) %>%
+  summarise(n = n())
+```
+
+Given this output, when we filter out Partial values from the data table, we should have 191 observations.
+
+```{r}
+full_games <- CODGames2_mp %>%
+  filter(FullPartial == "Full")
+```
+
+Now that this is done, let's see what the distribution of TotalXP is in Full Games. We will visualize this distribution using two boxplots where each is one of the two XPTypes that it is possible for the player to obtain.
+
+```{r}
+ggplot(full_games, mapping = aes(x = XPType, y = TotalXP)) +
+  geom_boxplot()
+
+```
+
+This shown, it is much more favorable for the user to have the Double XP + 10% XPType than the 10% Boost type. The user's totalXP median earning is approximately 6000 more than it otherwise would be. Additionally, the interquartile range for Double XP + 10% is larger and there are more outliers on the high end than there is for 10% Boost type.
+
+```{r}
+CODGames2_mp %>% 
+  group_by(XPType) %>%
+  summarise(n = n())
+```
+
+
+
+## Task 2
+
