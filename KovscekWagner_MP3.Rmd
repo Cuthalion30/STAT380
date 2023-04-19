@@ -21,6 +21,7 @@ library(lubridate)
 library(readxl)
 CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 ```
+<<<<<<< HEAD
 
 ## Task 1
 
@@ -61,3 +62,5 @@ I'm not sure if this is more or less surprising given what we know about the gam
 
 ## Task 2
 
+=======
+>>>>>>> Grace
