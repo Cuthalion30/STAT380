@@ -61,3 +61,93 @@ I'm not sure if this is more or less surprising given what we know about the gam
 
 ## Task 2
 
+```{r}
+tdm <- full_games %>% 
+  filter(GameType == "HC - TDM") %>% 
+  separate(Result, into = c("PlayersTeam", "OtherTeam"), sep = "-", convert = TRUE)
+tdm <- tdm %>% 
+  mutate(GameResult = tdm$PlayersTeam - tdm$OtherTeam) %>%
+  mutate(GameResult2 = case_when(GameResult > 0 ~ "win", GameResult < 0 ~ "lose", GameResult == 0 ~ "tie")) %>%
+  mutate(Win = ifelse(GameResult2 == "win", 1, 0)) %>% 
+  select(TotalXP, Eliminations, Deaths, Damage, XPType, Win, Score)
+```
+
+```{r}
+#set seed
+set.seed(1)
+
+#form needed for glmnet
+Xmat <- model.matrix(Score ~ . , data = tdm)[ ,-1]  
+y <- tdm$Score
+
+#no train test split
+#fit model
+lasso.mod <- glmnet(x = Xmat, y = y, 
+                    alpha = 1,
+                    standardize = TRUE)
+
+#create plot of coefficients
+plot(lasso.mod, xvar="lambda",label=TRUE)
+```
+```{r}
+#plot
+#set seed
+set.seed(1)
+
+#cv for k-fold cross validation 
+cv.out <- cv.glmnet(x = Xmat, y = y, 
+                    alpha = 1, standardize = TRUE,
+                    nfolds = 10)
+plot(cv.out)
+```
+
+```{r}
+#set seed
+set.seed(1)
+
+#min lambda
+bestlam1 <- cv.out$lambda.min
+#predict responses
+lasso.pred1 <- predict(cv.out, s = bestlam1,
+                       newx = Xmat)
+#find coefficients
+lasso.coef1 <- predict(cv.out, s = bestlam1,
+                       type = "coefficients")
+
+bestlam1
+lasso.coef1
+
+#1 standard error lambda
+bestlam2 <- cv.out$lambda.1se
+#predict responses
+lasso.pred2 <- predict(cv.out, s = bestlam2,
+                       newx = Xmat)
+#find coefficients
+lasso.coef2 <- predict(cv.out, s = bestlam2,
+                       type = "coefficients")
+bestlam2
+lasso.coef2
+
+```
+NEED TO CHANGE THIS SO NOT COMPARING RMSE
+The value of lambda that I chose was 2.379934, the min lambda. This lambda had a smaller RMSE value than the lambda found using 1se. It had an RMSE of 692.8955 which is smaller than 838.7051, which is good since we are looking for the smallest RMSE. 
+
+```{r}
+#set.seed
+set.seed(1)
+
+#feature selection 2 - Backwards Elimination 
+int_only_model <- glm(Score ~ 1, family = gaussian, data = tdm)
+
+full_model <- glm(Score ~ . -Score, family = gaussian, data = tdm)
+
+stats::step(object = full_model, 
+            scope = list(lower = int_only_model, upper = full_model),
+            data = tdm,
+            direction = "backward")
+
+regression_model <- lm(Score ~ TotalXP + Eliminations + Deaths + XPType + 
+    Win, data = tdm)
+regression_model
+#equation includes, TotalXP + Eliminations + Deaths + XPType + Win
+```
