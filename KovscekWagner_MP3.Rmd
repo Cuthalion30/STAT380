@@ -17,6 +17,10 @@ library(tidyverse)
 library(ggplot2)
 library(lubridate)
 
+# Libraries for trees
+library(rpart)
+library(rattle)
+
 #Part 1
 library(readxl)
 CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
@@ -25,6 +29,7 @@ CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 ## Task 1
 
 First, we would like to see the distribution of Full and Partial games. That way, we are able to see what the dimensions of the filtered data table should have.
+
 ```{r}
 CODGames2_mp %>% 
   group_by(FullPartial) %>%
@@ -60,4 +65,33 @@ I'm not sure if this is more or less surprising given what we know about the gam
 
 
 ## Task 2
+total XP, eliminations, deaths, damage, XPType, and whether the player’s team won,
 
+```{r}
+tdm <- full_games %>% 
+  filter(GameType == "HC - TDM") %>% 
+  separate(Result, into = c("PlayersTeam", "OtherTeam"), sep = "-", convert = TRUE)
+
+tdm <- tdm %>% 
+  mutate(GameResult = tdm$PlayersTeam - tdm$OtherTeam) %>%
+  mutate(GameResult2 = case_when(GameResult > 0 ~ "win", GameResult < 0 ~ "lose", GameResult == 0 ~ "tie")) %>%
+  mutate(Win = ifelse(GameResult2 == "win", 1, 0)) %>% 
+  select(TotalXP, Eliminations, Deaths, Damage, XPType, Win, Score)
+```
+
+### Part a
+
+### Part b
+
+Build a regression tree for predicting Score using total XP, eliminations, deaths, damage, XPType, and whether the player’s team won. Specify that each node must contain at least 15 observations. Display the tree and report the variables associated with the 3 highest variable importance values. (Include the variable importance values when mentioning the variables.)
+
+```{r}
+res <- rpart(Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + Win, method="anova", data=tdm,
+             minbucket=15)
+
+#Create plot using fancyRpartPlot for rattle library
+fancyRpartPlot(res, cex=0.8)
+```
+The variables with the three highest importance values are Damage (`r res[["variable.importance"]][["Damage"]]`), Eliminations (`r res[["variable.importance"]][["Eliminations"]]`), and TotalXP (`r res[["variable.importance"]][["TotalXP"]]`)
+
+### Part c
