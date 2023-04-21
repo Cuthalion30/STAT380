@@ -60,7 +60,6 @@ I'm not sure if this is more or less surprising given what we know about the gam
 
 
 ## Task 2
-
 ```{r}
 tdm <- full_games %>% 
   filter(GameType == "HC - TDM") %>% 
@@ -72,6 +71,7 @@ tdm <- tdm %>%
   select(TotalXP, Eliminations, Deaths, Damage, XPType, Win, Score)
 ```
 
+##2a
 ```{r}
 #set seed
 set.seed(1)
@@ -127,10 +127,27 @@ lasso.coef2 <- predict(cv.out, s = bestlam2,
                        type = "coefficients")
 bestlam2
 lasso.coef2
-
 ```
-NEED TO CHANGE THIS SO NOT COMPARING RMSE
+```{r}
+#determine which lambda to use
+MSE_lassoMin <- mean((y - lasso.pred1)^2)
+RMSE_lassoMin <- sqrt(MSE_lassoMin)
+RMSE_lassoMin
+
+MSE_lasso1se <- mean((y - lasso.pred2)^2)
+RMSE_lasso1se <- sqrt(MSE_lasso1se)
+RMSE_lasso1se
+```
+
+NEED TO CHANGE THIS SO NOT COMPARING RMSE?!
+Discussion on which Value of Lambda was Selected:
+
 The value of lambda that I chose was 2.379934, the min lambda. This lambda had a smaller RMSE value than the lambda found using 1se. It had an RMSE of 692.8955 which is smaller than 838.7051, which is good since we are looking for the smallest RMSE. 
+
+
+The Estimated Equation for LASSO:
+
+lm(formula = Score ~ TotalXP + Eliminations + Deaths + Damage + XPType + Win, data = tdm)
 
 ```{r}
 #set.seed
@@ -149,5 +166,44 @@ stats::step(object = full_model,
 regression_model <- lm(Score ~ TotalXP + Eliminations + Deaths + XPType + 
     Win, data = tdm)
 regression_model
-#equation includes, TotalXP + Eliminations + Deaths + XPType + Win
 ```
+
+The Estimated Equation for Backwards Elimination: 
+
+lm(formula = Score ~ TotalXP + Eliminations + Deaths + XPType + Win, data = tdm)
+
+
+Comparison of the results of LASSO with the results of Backwards Elimination:
+
+The difference between the two results is that the LASSO results based on the minimum lambda value didn't remove any of the variables. The backwards elimination got rid of the Damage variable from the equation, unlike LASSO. 
+
+##2b
+##2c
+```{r}
+#Create Indictor(s) for XPType
+tdm2 <- tdm %>%
+        mutate(XPType = ifelse(XPType == "10% Boost", 1, 0))
+
+#Scale numeric variables
+xvars <- c("TotalXP", "Eliminations", "Deaths", "Damage", "XPType", "Win")
+tdm2[ , xvars] <- scale(tdm2[ , xvars], center = TRUE, scale = TRUE)
+
+#regression model based on the variables selected by backwards elimination in part a
+regression_model2 <- lm(formula = Score ~ TotalXP + Eliminations + Deaths + XPType + Win, data = tdm2)
+regression_model2
+```
+
+The estimated equation is:
+
+
+$$\hat{y}_i = 3104.9 + 382.9 x_{i,1} + 1030.9 x_{i,2} - 276.5 x_{i,3} + 182.8 x_{i,4} - 226.1 x_{i,5}$$
+
+
+3 Most Important variables based on Magnitude of Estimated Coefficients:
+
+Eliminations, TotalXP, and Deaths
+
+How Does this Compare to the Regression Tree:
+
+Damage, Eliminations, and TotalXP were the three most important variables from the regression tree, but the linear regression model based on backwards elimination showed Deaths, Eliminations, and TotalXP as the most important variables. The only difference is that the regression tree included Damage, but the regression model based on backwards elimination included Deaths instead. 
+
