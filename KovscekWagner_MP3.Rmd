@@ -21,7 +21,7 @@ library(rattle)
 library(glmnet)
 #Part 1
 library(readxl)
-CODGames2_mp <- read_excel("C:/Users/Grace Wagner/Downloads/CODGames2_mp.xlsx")
+CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 ```
 
 ## Task 1
