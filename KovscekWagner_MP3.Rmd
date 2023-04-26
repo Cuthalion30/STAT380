@@ -25,11 +25,18 @@ library(rattle)
 library(readxl)
 CODGames2_mp <- read_excel("data/CODGames2_mp.xlsx")
 ```
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 
 ## Task 1
 
 First, we would like to see the distribution of Full and Partial games. That way, we are able to see what the dimensions of the filtered data table should have.
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 ```{r}
 CODGames2_mp %>% 
   group_by(FullPartial) %>%
@@ -65,6 +72,7 @@ I'm not sure if this is more or less surprising given what we know about the gam
 
 
 ## Task 2
+<<<<<<< HEAD
 total XP, eliminations, deaths, damage, XPType, and whether the player’s team won,
 
 ```{r}
@@ -95,3 +103,8 @@ fancyRpartPlot(res, cex=0.8)
 The variables with the three highest importance values are Damage (`r res[["variable.importance"]][["Damage"]]`), Eliminations (`r res[["variable.importance"]][["Eliminations"]]`), and TotalXP (`r res[["variable.importance"]][["TotalXP"]]`)
 
 ### Part c
+=======
+
+=======
+>>>>>>> Grace
+>>>>>>> main
