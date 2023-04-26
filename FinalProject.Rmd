@@ -11,10 +11,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Front Matter
 ```{r}
-CODGameModes <- read.csv("C:/Users/Grace Wagner/Downloads/CODGameModes.csv")
-CODGames_p1_380 <- read.csv("C:/Users/Grace Wagner/Downloads/CODGames_p1_380.csv")
-CODGames_p2_380 <- read.csv("C:/Users/Grace Wagner/Downloads/CODGames_p2_380.csv")
-CODMaps <- read.csv("C:/Users/Grace Wagner/Downloads/CODMaps.csv")
+CODGameModes <- read.csv("~/Documents/github/STAT380/data/CODGameModes.csv")
+CODGames_p1_380 <- read.csv("~/Documents/github/STAT380/data/CODGames_p1_380.csv")
+CODGames_p2_380 <- read.csv("~/Documents/github/STAT380/data/CODGames_p2_380.csv")
+CODMaps <- read.csv("~/Documents/github/STAT380/data/CODMaps.csv")
 library(tidyverse)
 ```
 
