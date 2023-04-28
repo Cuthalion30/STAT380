@@ -10,26 +10,71 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Front Matter
-```{r}
+```{r, message= FALSE}
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+
 CODGameModes <- read.csv("~/Documents/github/STAT380/data/CODGameModes.csv")
 CODGames_p1_380 <- read.csv("~/Documents/github/STAT380/data/CODGames_p1_380.csv")
 CODGames_p2_380 <- read.csv("~/Documents/github/STAT380/data/CODGames_p2_380.csv")
 CODMaps <- read.csv("~/Documents/github/STAT380/data/CODMaps.csv")
-library(tidyverse)
 ```
 
 ## Task 1 Data Cleaning and Data Visualization
 
 Research Question: Which maps are the most likely to win the map vote?
 
+```{r}
+all(colnames(CODGames_p1_380) == colnames(CODGames_p2_380))
+```
+
+
 How I Plan to Answer this Question:
 
-I will first make sure I join the CODGames_p1_380 and CODGames_p2_380 datasets, making sure to keep all of the observations, to make a complete dataset of the votes and maps selected. Then I will identify which votes ended in a tie. I will store this data separaetly from the data where a normal vote took place since Map1 is always chosen when there is a tie. To do this I plan to make another dataset that is made from the filtered out the rows that have no values in the MapVote column. Next I will identify how many times each map was chosen in a tie by summarizing the data and grouping by Choice making sure to add a N() value so that the number of times each Map was chosen is in the summary. I will repeat the summary and group_by steps for the dataset containing of regular votes. From there I will take the information from the two summaries, combine them, and make a visualization that shwos the results. To represent the results from ties, and from regular votes, I want to make sure that it is shown which maps were chosen from ties. To do this, I would like to make a barchart that is made of two colors and a key, one color will represnt regular votes and the other will represent results from tied votes.
+I will first make sure I append the CODGames_p1_380 and CODGames_p2_380 datasets, making sure to keep all of the observations, to make a complete dataset of the votes and maps selected. Then I will identify which votes ended in a tie. I will store this data separaetly from the data where a normal vote took place since Map1 is always chosen when there is a tie. 
+To do this I plan to make another dataset that is made from the filtered out the rows that have no values in the MapVote column. Next I will identify how many times each map was chosen in a tie by summarizing the data and grouping by Choice making sure to add a N() value so that the number of times each Map was chosen is in the summary. I will repeat the summary and group_by steps for the dataset containing of regular votes. From there I will take the information from the two summaries, combine them, and make a visualization that shwos the results. To represent the results from ties, and from regular votes, I want to make sure that it is shown which maps were chosen from ties. To do this, I would like to make a barchart that is made of two colors and a key, one color will represnt regular votes and the other will represent results from tied votes.
 
 ```{r}
 #join datasets
-JoinedCODGames <- full_join()
+all_games <- CODGames_p1_380 %>% bind_rows(CODGames_p2_380)
+
+# Check number of columns
+# count(all_games) == (count(CODGames_p1_380) + count(CODGames_p2_380))
+
 #filter out ties
-ties <- dataset(filter())
+map_stats <- all_games %>% 
+  select(Map1, Map2, Choice, MapVote) %>% 
+  filter(MapVote != "")
+```
+
+```{r}
+map_stats$Choice[map_stats$Choice == "APocalypse"] <- "Apocalypse"
+map_stats$Choice[map_stats$Choice == "Apocolypse"] <- "Apocalypse"
+map_stats$Choice[map_stats$Choice == "Drive-In"] <- "Drive-in"
+map_stats$Choice[map_stats$Choice == "Collateral"] <- "Collateral Strike"
+map_stats$Choice[map_stats$Choice == "Collaterel Strike"] <- "Collateral Strike"
+map_stats$Choice[map_stats$Choice == "Deisel"] <- "Diesel"
+map_stats$Choice[map_stats$Choice == "Nuketown '84 Halloween"] <- "Nuketown '84"
+
+CODMaps <- CODMaps %>% separate(Date, into = c("month", "day", "year"), sep = "/", convert = TRUE)
+CODMaps <- CODMaps %>% 
+  rename(Choice = Name)
+  
+
+# Join CODMaps so season variables are present for analysis
+map_stats <- map_stats %>% inner_join(CODMaps, by = "Choice")
+```
+
+```{r}
+
+ggplot(data = map_stats, mapping = aes(x = reorder(Choice, year), fill = as.factor(year))) + 
+  geom_bar() + 
+  labs(title = "Chosen Maps and their Selection Frequency",
+       y = "Frequency",
+       x = "Map Choice",
+       fill = "Map Release Year") +
+  theme(axis.text.x = element_text(angle = 90))
+
 ```
 
