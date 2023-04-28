@@ -60,6 +60,10 @@ map_stats$Choice[map_stats$Choice == "Nuketown '84 Halloween"] <- "Nuketown '84"
 CODMaps <- CODMaps %>% separate(Date, into = c("month", "day", "year"), sep = "/", convert = TRUE)
 CODMaps <- CODMaps %>% 
   rename(Choice = Name)
+
+CODMaps$year[CODMaps$year == "20"] <-  2020
+CODMaps$year[CODMaps$year == "21"] <-  2021
+CODMaps$year[CODMaps$year == "22"] <-  2022
   
 
 # Join CODMaps so season variables are present for analysis
@@ -76,5 +80,13 @@ ggplot(data = map_stats, mapping = aes(x = reorder(Choice, year), fill = as.fact
        fill = "Map Release Year") +
   theme(axis.text.x = element_text(angle = 90))
 
+```
+```{r}
+x <- all_games %>% group_by(PrimaryWeapon) %>% 
+  summarize(
+    n = n()
+  )
+x$n <- x$n[order(x$n)]
+x
 ```
 
