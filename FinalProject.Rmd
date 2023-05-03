@@ -90,3 +90,91 @@ x$n <- x$n[order(x$n)]
 x
 ```
 
+##3
+
+Research Question: Can we predict weapon based on the score?
+
+```{r}
+x <- all_games %>% group_by(PrimaryWeapon) %>% 
+  summarize(
+    n = n()
+  )
+x$n <- x$n[order(x$n)]
+x
+```
+
+```{r}
+sum(is.na(all_games$top5Weapons))
+```
+
+```{r}
+all_games <- all_games %>%
+  filter(PrimaryWeapon != "")
+
+all_games <- all_games %>%
+  mutate(top5Weapons = ifelse(PrimaryWeapon == "XM4"| PrimaryWeapon == "Type 63" | PrimaryWeapon == "ShadowHunter" | PrimaryWeapon == "RPD" | PrimaryWeapon == "QBZ-83", 1, 0))
+```
+
+```{r}
+#Random Forest
+set.seed(123)
+train_ind <-sample(1:nrow(all_games), floor(0.8 * nrow(all_games)))
+
+Train <- all_games[train_ind, ]
+Test <- all_games[-train_ind, ]
+
+rf <- randomForest(as.factor(top5Weapons) ~ Score, data = Train, ntree = 500, mtry = 1)
+
+pred_prob_rf <- predict(rf, newdata = Test, type = "prob")
+
+pred_surv_rf <- predict(rf, newdata = Test, type = "response")
+
+mean(pred_surv_rf == Test$top5Weapons) #calculate accuracy
+
+set.seed(NULL)
+```
+
+```{r}
+#KNN
+xvars <- c("Score")
+all_games2 <- all_games
+all_games2[ , xvars] <- scale(all_games2[ , xvars], center = TRUE, scale = TRUE)
+
+set.seed(123)
+train_ind2 <- sample(1:nrow(all_games2), floor(0.8 * nrow(all_games2)))
+
+Train2 <- all_games2[train_ind2, ]
+Test2 <- all_games2[-train_ind2, ]
+
+knn_res <- knn(train = Train2[ ,xvars, drop = FALSE],
+               test = Test2[ , xvars, drop = FALSE],
+               cl = Train2$top5Weapons,
+               k = 3)
+
+Test2 <- Test2 %>%
+  mutate(pred_top5Weapons = knn_res)
+
+mean(Test2$top5Weapons == Test2$pred_top5Weapons) #calculate accuracy
+
+set.seed(NULL)
+```
+```{r}
+#Naive Bayes
+set.seed(123)
+train_ind3 <- sample(1:nrow(all_games), floor(0.8 * nrow(all_games)))
+
+Train3 <- all_games[train_ind3, ]
+Test3 <- all_games[-train_ind3, ]
+
+model <- naiveBayes(top5Weapons ~ Score, data = Train3)
+pred_bayes <- predict(model, Test3)
+
+mean(pred_bayes == Test3$top5Weapons) #calculate accuracy
+set.seed(NULL)
+```
+
+Research Question: Can we predict weapon based on the score?
+
+The three methods I used in this section are Random Forest (listed in problem), KNN (2nd chosen from class), and Naive Bayes (not gone over in class). I decided to use Naive Bayes because I found a lot of information about it online, in the textbook, and the top5Weapons variable we created for this problem has 2 levels which is ideal for Naive Bayes. We created the top5Weapons variable to classify the Weapons from the data set. Since there are many different weapons, which would require multiple classifiers, we decided it would be better for the models and our question to create a variable that represents the top 5 weapons that are used. So, we made sure that there were no NA values, created a table to find the top 5 weapons used, then made a classifier based on the results of the table. I made sure to keep the training testing split the same percentage between models so that they could be fairly compared. I also created a new data set in the KNN model to represent the one we were using in the other models so that the scaling wouldn't effect the original data set and mess up the results of the other models. 
+
+After running all of the models and finding their accuracy, it appears that the Naive Bayes model performed the best of the three. Naive Bayes had the largest accuracy, 0.8703704, while Random Forest had an accuracy of 0.8395062, and KNN had an accuracy of 0.8148148. So, it is safe to say that we can predict that the weapon used was one of the top 5 most popular weapons based on the score with a nearly 87% accuracy using the Naive Bayes model. 
