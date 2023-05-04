@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Front Matter
 ```{r, message= FALSE}
+rm(list = ls())
 library(tidyverse)
 library(ggplot2)
 library(lubridate)
@@ -25,38 +26,89 @@ CODMaps <- read.csv("~/Documents/github/STAT380/data/CODMaps.csv")
 
 Research Question: Which maps are the most likely to win the map vote?
 
-```{r}
-all(colnames(CODGames_p1_380) == colnames(CODGames_p2_380))
-```
-
-
 How I Plan to Answer this Question:
 
 I will first make sure I append the CODGames_p1_380 and CODGames_p2_380 datasets, making sure to keep all of the observations, to make a complete dataset of the votes and maps selected. Then I will identify which votes ended in a tie. I will store this data separaetly from the data where a normal vote took place since Map1 is always chosen when there is a tie. 
 To do this I plan to make another dataset that is made from the filtered out the rows that have no values in the MapVote column. Next I will identify how many times each map was chosen in a tie by summarizing the data and grouping by Choice making sure to add a N() value so that the number of times each Map was chosen is in the summary. I will repeat the summary and group_by steps for the dataset containing of regular votes. From there I will take the information from the two summaries, combine them, and make a visualization that shwos the results. To represent the results from ties, and from regular votes, I want to make sure that it is shown which maps were chosen from ties. To do this, I would like to make a barchart that is made of two colors and a key, one color will represnt regular votes and the other will represent results from tied votes.
 
+First, I will add concatenate the cases of player one and player two together and filter out the ties.
+
 ```{r}
-#join datasets
+# concatenate player results datasets
 all_games <- CODGames_p1_380 %>% bind_rows(CODGames_p2_380)
 
-# Check number of columns
-# count(all_games) == (count(CODGames_p1_380) + count(CODGames_p2_380))
-
-#filter out ties
+#filter out NAN values and select only columns relevant to the question
 map_stats <- all_games %>% 
   select(Map1, Map2, Choice, MapVote) %>% 
   filter(MapVote != "")
 ```
 
+Now, I want to fix the names of all misspelled maps
+
+```{r}
+# Find all maps that need to be renamed ----
+# Put all names into a list. CODMaps$Name
+uni_names <- union(unique(map_stats$Map1), unique(map_stats$Map2))
+uni_names <- union(uni_names, unique(map_stats$Choice))
+# Find the symmetric difference, these are the bad values
+setdiff(uni_names, CODMaps$Name)
+```
+
+There are 21 misspelled map names!
+
+Update Map1 names
+
+```{r}
+# View names that need changing
+# setdiff(unique(map_stats$Map1), CODMaps$Name)
+
+map_stats$Map1[map_stats$Map1 == "Jungle "] <- "Jungle"
+map_stats$Map1[map_stats$Map1 == "Ruah"] <- "Rush"
+map_stats$Map1[map_stats$Map1 == "Collateral"] <- "Collateral Strike"
+map_stats$Map1[map_stats$Map1 == "Riad"] <- "Rush"
+map_stats$Map1[map_stats$Map1 == "Miami "] <- "Miami"
+map_stats$Map1[map_stats$Map1 == "Collateral Striek"] <- "Collateral Strike"
+map_stats$Map1[map_stats$Map1 == "Miami Stirke"] <- "Miami Strike"
+map_stats$Map1[map_stats$Map1 == "Collaterol Strike"] <- "Collateral Strike"
+map_stats$Map1[map_stats$Map1 == "Drive-in"] <- "Drive-In"
+map_stats$Map1[map_stats$Map1 == "Deprogam"] <- "Deprogram"
+map_stats$Map1[map_stats$Map1 == "Rush "] <- "Rush"
+map_stats$Map1[map_stats$Map1 == "Zoo "] <- "Zoo"
+map_stats$Map1[map_stats$Map1 == "Raid "] <- "Raid"
+```
+
+Update Map2 names
+
+```{r}
+# setdiff(unique(map_stats$Map2), CODMaps$Name)
+
+map_stats$Map2[map_stats$Map2 == "Miami Stirke" ] <- "Miami Strike"
+map_stats$Map2[map_stats$Map2 == "Collateral" ] <- "Collateral Strike"
+map_stats$Map2[map_stats$Map2 == "yamantau"] <- "Yamantau"
+map_stats$Map2[map_stats$Map2 == "Drive-in" ] <- "Drive-In"
+map_stats$Map2[map_stats$Map2 == "Nuketown '84 Halloween" ] <- "Nuketown '84"
+map_stats$Map2[map_stats$Map2 == "Miami Sstrike" ] <- "Miami Strike"
+map_stats$Map2[map_stats$Map2 == "Amrada Strike" ] <- "Armada Strike"
+
+```
+
+
+Update Choice names
+
 ```{r}
 map_stats$Choice[map_stats$Choice == "APocalypse"] <- "Apocalypse"
 map_stats$Choice[map_stats$Choice == "Apocolypse"] <- "Apocalypse"
-map_stats$Choice[map_stats$Choice == "Drive-In"] <- "Drive-in"
+map_stats$Choice[map_stats$Choice == "Drive-in"] <- "Drive-In"
 map_stats$Choice[map_stats$Choice == "Collateral"] <- "Collateral Strike"
 map_stats$Choice[map_stats$Choice == "Collaterel Strike"] <- "Collateral Strike"
 map_stats$Choice[map_stats$Choice == "Deisel"] <- "Diesel"
 map_stats$Choice[map_stats$Choice == "Nuketown '84 Halloween"] <- "Nuketown '84"
+```
 
+
+
+
+```{r}
 CODMaps <- CODMaps %>% separate(Date, into = c("month", "day", "year"), sep = "/", convert = TRUE)
 CODMaps <- CODMaps %>% 
   rename(Choice = Name)
@@ -79,42 +131,114 @@ ggplot(data = map_stats, mapping = aes(x = reorder(Choice, year), fill = as.fact
        fill = "Map Release Year") +
   theme(axis.text.x = element_text(angle = 90))
 ```
-
+Split the vote feature into the votes for the first and votes for the second.
 
 ```{r, warning=FALSE}
 map_stats <- map_stats %>% separate(MapVote, into = c("FirstV", "SecondV"), sep = " to ", convert = TRUE) %>% 
   na.omit()
 ```
 
-```{r}
-total_games <- sum(map_totals$TotalV)/2
+What percentage of the map choices were ties?
 
+```{r}
+map_stats <- map_stats %>% mutate(Tie = if_else(FirstV == SecondV, "Tie", "No Tie"))
+
+ties <- map_stats %>% 
+  group_by(Tie) %>% 
+  summarize(n = as.factor(n()))
+
+ggplot(ties, aes(x="", y=n, fill = Tie)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  geom_text(aes(label = paste0(n)), position = position_stack(vjust = .8, reverse = TRUE)) +
+  theme_void() +
+  labs(title = "Proportion of Tie Votes",
+    x = NULL,
+       y = NULL,
+       fill = "Vote Status") +
+  scale_fill_manual(values=c("#09626F", "gold2"))
+
+# pie(ties$n, labels = c("No Tie", "Tie"), col = c("yellow", "black"), main = "Proportion of Tied Map Votes")
+```
+
+Count total times a map has won were it was not a tie
+
+```{r}
+
+map_stats <- map_stats %>% 
+  filter(Tie == "Tie")
+
+# Count number of appearances of a map in the first position
 map1_votes <- map_stats %>% group_by(Map1) %>% 
   summarize(N1 = n())
 
+# Count number of appearances of a map in the second position
 map2_votes <- map_stats %>% group_by(Map2) %>% 
   summarize(N2 = n())
 
+# Rename their columns to be the same for joining
 names(map2_votes)[1] <- "Map"
 names(map1_votes)[1] <- "Map"
 
+# Join tables with map appearance counts
+# Find total appearances
 map_totals <- map2_votes %>% full_join(map1_votes, by = "Map") %>% 
   mutate(N1 = replace_na(N1, 0),
          N2 = replace_na(N2, 0),
-         TotalV = (N1 + N2),
-         OverallProp = TotalV/total_games
+         TotalV = (N1 + N2)
 )
-```
-```{r}
-x <- all_games %>% group_by(PrimaryWeapon) %>% 
-  summarize(
-    n = n()
-  )
-x$n <- x$n[order(x$n)]
-x
+
+# Find proportion of times a map was choosen (without being a tie)
+total_games <- sum(map_totals$TotalV)/2
+map_totals <- map_totals %>% mutate(OverallProp = (TotalV/total_games))
 ```
 
-##3
+
+```{r}
+
+CODMaps <- CODMaps %>% rename(Map = Choice)
+
+map_totals <- map_totals %>% full_join(CODMaps, by = "Map")
+
+ggplot(map_totals, aes(y = OverallProp, x = reorder(Map, OverallProp, decreasing = TRUE), fill = as.factor(year))) +
+  geom_col() +
+  labs(title = "Favorite Maps",
+       subtitle = "Showed by year map was first available",
+       x = "Map Name",
+       y = "Proportion of Map Vote Wins",
+       fill = "Year Released") +
+  # scale_fill_brewer(palette="Set1") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+
+Join this table with the CODMaps table
+
+```{r}
+
+favorite_season <- map_totals %>% full_join(CODMaps, by = "Map") %>% 
+  group_by(FirstAvailable) %>% 
+  summarize(SeasonProp = sum(OverallProp))
+
+```
+
+```{r}
+
+ggplot(favorite_season, aes(y = SeasonProp, x = reorder(FirstAvailable, SeasonProp, decreasing = TRUE), fill = FirstAvailable)) +
+  geom_col() +
+  labs(title = "Favorite Maps by Season",
+       subtitle = "Ties not included",
+       x = "Map Available Category",
+       y = "Proportion of Map Vote Wins",
+       fill = "First Available") +
+  scale_fill_brewer(palette="Set1") +
+  theme(axis.text.x = element_text(angle = 90))
+
+```
+
+
+
+## Task 3
 
 Research Question: Can we predict weapon based on the score?
 
