@@ -1,5 +1,5 @@
 ---
-title: "FinalProjectWagnerKovscek"
+title: "Final Project"
 author: "Grace Wagner and Nathanael Kovscek"
 date: "2023-04-25"
 output: html_document
@@ -10,11 +10,15 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Front Matter
+
 ```{r, message= FALSE}
 rm(list = ls())
 library(tidyverse)
 library(ggplot2)
 library(lubridate)
+library(randomForest)
+library(FNN)
+library(e1071)
 
 CODGameModes <- read.csv("~/Documents/github/STAT380/data/CODGameModes.csv")
 CODGames_p1_380 <- read.csv("~/Documents/github/STAT380/data/CODGames_p1_380.csv")
@@ -22,7 +26,7 @@ CODGames_p2_380 <- read.csv("~/Documents/github/STAT380/data/CODGames_p2_380.csv
 CODMaps <- read.csv("~/Documents/github/STAT380/data/CODMaps.csv")
 ```
 
-## Task 1 Data Cleaning and Data Visualization
+## Task 1: Which maps are the most likely to win the map vote?
 
 Research Question: Which maps are the most likely to win the map vote?
 
@@ -31,7 +35,7 @@ How I Plan to Answer this Question:
 I will first make sure I append the CODGames_p1_380 and CODGames_p2_380 datasets, making sure to keep all of the observations, to make a complete dataset of the votes and maps selected. Then I will identify which votes ended in a tie. I will store this data separaetly from the data where a normal vote took place since Map1 is always chosen when there is a tie. 
 To do this I plan to make another dataset that is made from the filtered out the rows that have no values in the MapVote column. Next I will identify how many times each map was chosen in a tie by summarizing the data and grouping by Choice making sure to add a N() value so that the number of times each Map was chosen is in the summary. I will repeat the summary and group_by steps for the dataset containing of regular votes. From there I will take the information from the two summaries, combine them, and make a visualization that shwos the results. To represent the results from ties, and from regular votes, I want to make sure that it is shown which maps were chosen from ties. To do this, I would like to make a barchart that is made of two colors and a key, one color will represnt regular votes and the other will represent results from tied votes.
 
-First, I will add concatenate the cases of player one and player two together and filter out the ties.
+First, I will add concatenate the cases of player one and player two together. Then, I will filter out the ties, select features relevant to the present question, and assign this filtered table to a new variable called map_stats.
 
 ```{r}
 # concatenate player results datasets
@@ -123,7 +127,7 @@ map_stats <- map_stats %>% inner_join(CODMaps, by = "Choice")
 ```
 
 ```{r}
-ggplot(data = map_stats, mapping = aes(x = reorder(Choice, year), fill = as.factor(year))) + 
+ggplot(data = map_stats, mapping = aes(x = reorder(Choice, Choice, function(x)-length(x)), fill = as.factor(year))) + 
   geom_bar() + 
   labs(title = "Chosen Maps and their Selection Frequency",
        y = "Frequency",
@@ -158,10 +162,9 @@ ggplot(ties, aes(x="", y=n, fill = Tie)) +
        fill = "Vote Status") +
   scale_fill_manual(values=c("#09626F", "gold2"))
 
-# pie(ties$n, labels = c("No Tie", "Tie"), col = c("yellow", "black"), main = "Proportion of Tied Map Votes")
 ```
 
-Count total times a map has won were it was not a tie
+Count total times a map has won were it was not a tie:
 
 ```{r}
 
@@ -212,17 +215,14 @@ ggplot(map_totals, aes(y = OverallProp, x = reorder(Map, OverallProp, decreasing
 ```
 
 
-Join this table with the CODMaps table
+Join this table with the CODMaps table and visualize season preferences.
+
 
 ```{r}
 
-favorite_season <- map_totals %>% full_join(CODMaps, by = "Map") %>% 
+favorite_season <- map_totals %>% 
   group_by(FirstAvailable) %>% 
   summarize(SeasonProp = sum(OverallProp))
-
-```
-
-```{r}
 
 ggplot(favorite_season, aes(y = SeasonProp, x = reorder(FirstAvailable, SeasonProp, decreasing = TRUE), fill = FirstAvailable)) +
   geom_col() +
@@ -236,8 +236,92 @@ ggplot(favorite_season, aes(y = SeasonProp, x = reorder(FirstAvailable, SeasonPr
 
 ```
 
+## Task 2
+
+Research Question: How does the game type affect TotalXP after accounting for the Score?
+
+### Step1 - Clean column values for game type
+
+```{r}
+# List all unique game type values
+# Locate all spellings
+# unique(all_games$GameType)
+
+# Update values
+all_games$GameType[all_games$GameType == "HC - TDM" ] <- "TDM"
+all_games$GameType[all_games$GameType == "HC - Kill Confirmed" ] <- "Kill_Confirmed"
+all_games$GameType[all_games$GameType == "Kill Confirmed" ] <- "Kill_Confirmed"
+all_games$GameType[all_games$GameType == "HC - Hardpoint" ] <- "Hardpoint"
+all_games$GameType[all_games$GameType == "HC - Domination" ] <- "Domination"
+
+# List values to display naming convention uniformity
+unique(all_games$GameType)
+
+```
+
+### Step2 - EDA
+
+```{r}
+# Remove score null values from the dataset
+
+all_games <- all_games[!(is.na(all_games$Score)), ]
+
+# Create a table with summary statistics of score by game type
+all_games %>% 
+  group_by(GameType) %>% 
+  summarize(count = n(),
+    ScoreMean = mean(Score),
+    ScoreMedian = median(Score),
+    Scoresd = sd(Score),
+    Scoremin = min(Score),
+    Scoremax = max(Score))
+```
+
+```{r}
+ggplot(all_games, mapping = aes(y = Score, x = GameType)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Score by Game Type",
+       x = "Game Type",
+       y = "Player Score") +
+  theme_light()
+```
+
+```{r}
+# Create a scatterplot of Score and TotalXP
+# Facet by GameType
+
+ggplot(all_games, mapping = aes(x = Score, TotalXP)) +
+  geom_point() + 
+  geom_smooth(method = lm, se = FALSE) +
+  facet_grid(. ~ GameType) +
+  facet_wrap(. ~ GameType, ncol = 2) +
+  labs(title = "Total Experience Point by Player Score",
+       subtitle = "Grouped by Game Type",
+       x = "Player Score",
+       y = "Total Experience Earned") +
+  theme_light() +
+  theme(strip.text.x = element_text(color = "black"))
+```
+
+### Step3 - Build a model
+
+```{r}
+# Build indicator variables for gametype
+all_games <- all_games %>% 
+  mutate(TDM = if_else(GameType == "TDM", 1, 0),
+  Hardpoint = if_else(GameType == "Hardpoint", 1, 0),
+  Domination = if_else(GameType == "Domination", 1, 0),
+  Kill_Confirmed = if_else(GameType == "Kill_Confirmed", 1, 0)
+  )
 
 
+model <- lm(TotalXP ~ TDM + Hardpoint + Domination + Kill_Confirmed + Score, all_games)
+
+```
+
+The following model describes the relationship
+
+$$\hat{y}_i = `r round(model[["coefficients"]][1], digits=3)` + `r round(model[["coefficients"]][2], digits = 3)`x_{i, TDM} + `r round(model[["coefficients"]][3], digits = 3)`x_{i, Hardpoint} + `r round(model[["coefficients"]][4], digits = 3)`x_{i, Domination} + `r round(model[["coefficients"]][6], digits = 3)`x_{i, Score}$$
 ## Task 3
 
 Research Question: Can we predict weapon based on the score?
@@ -306,6 +390,8 @@ mean(Test2$top5Weapons == Test2$pred_top5Weapons) #calculate accuracy
 
 set.seed(NULL)
 ```
+
+
 ```{r}
 #Naive Bayes
 set.seed(123)
