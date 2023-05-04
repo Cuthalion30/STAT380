@@ -67,7 +67,6 @@ map_stats <- map_stats %>% inner_join(CODMaps, by = "Choice")
 ```
 
 ```{r}
-
 ggplot(data = map_stats, mapping = aes(x = reorder(Choice, year), fill = as.factor(year))) + 
   geom_bar() + 
   labs(title = "Chosen Maps and their Selection Frequency",
@@ -75,6 +74,31 @@ ggplot(data = map_stats, mapping = aes(x = reorder(Choice, year), fill = as.fact
        x = "Map Choice",
        fill = "Map Release Year") +
   theme(axis.text.x = element_text(angle = 90))
+```
 
+
+```{r, warning=FALSE}
+map_stats <- map_stats %>% separate(MapVote, into = c("FirstV", "SecondV"), sep = " to ", convert = TRUE) %>% 
+  na.omit()
+```
+
+```{r}
+total_games <- sum(map_totals$TotalV)/2
+
+map1_votes <- map_stats %>% group_by(Map1) %>% 
+  summarize(N1 = n())
+
+map2_votes <- map_stats %>% group_by(Map2) %>% 
+  summarize(N2 = n())
+
+names(map2_votes)[1] <- "Map"
+names(map1_votes)[1] <- "Map"
+
+map_totals <- map2_votes %>% full_join(map1_votes, by = "Map") %>% 
+  mutate(N1 = replace_na(N1, 0),
+         N2 = replace_na(N2, 0),
+         TotalV = (N1 + N2),
+         OverallProp = TotalV/total_games
+)
 ```
 
